@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sites_Scores Audits - WatchLeaks{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Sites_Scores Audits</h3>
+        <small class="text-muted">{{ isAdmin ? 'All audits' : 'Your audits' }} · passive security scoring</small>
+    </div>
+    <a href="{{ path('app_sites_scores_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> New Audit
+    </a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Targets</th>
+                    <th>Prompt</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                    {% if isAdmin %}<th>Owner</th>{% endif %}
+                    <th>Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for audit in audits %}
+                <tr>
+                    <td>
+                        <div class="small fw-semibold">{{ audit.targetList|slice(0, 2)|join(', ') }}</div>
+                        {% if audit.targetList|length > 2 %}
+                            <small class="text-muted">+{{ audit.targetList|length - 2 }} autre(s)</small>
+                        {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ audit.prompt|slice(0, 90) }}{{ audit.prompt|length > 90 ? '…' : '' }}</td>
+                    <td>{{ audit.score is not null ? audit.score ~ '/100' : (audit.error ? 'Erreur' : 'N/A') }}</td>
+                    <td>
+                        {% if audit.grade %}
+                            <span class="badge bg-{{ audit.grade == 'A' or audit.grade == 'B' ? 'success' : (audit.grade == 'C' ? 'warning' : 'danger') }}">{{ audit.grade }}</span>
+                        {% else %}<span class="text-muted">-</span>{% endif %}
+                    </td>
+                    {% if isAdmin %}<td class="small">{{ audit.owner ? audit.owner.email : '-' }}</td>{% endif %}
+                    <td class="small text-muted">{{ audit.createdAt|date('Y-m-d H:i') }}</td>
+                    <td class="text-end">
+                        <a href="{{ path('app_sites_scores_show', {id: audit.id}) }}" class="btn btn-sm btn-outline-primary me-1" title="View" aria-label="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <form method="post" action="{{ path('app_sites_scores_delete', {id: audit.id}) }}" class="d-inline" onsubmit="return confirm('Delete this audit?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ audit.id) }}">
+                            <button class="btn btn-sm btn-outline-danger" title="Delete" aria-label="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="{{ isAdmin ? 7 : 6 }}" class="text-center text-muted py-4">Aucun audit. <a href="{{ path('app_sites_scores_new') }}">Lancer le premier audit</a>.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

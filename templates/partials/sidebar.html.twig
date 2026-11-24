@@ -29,6 +29,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ path('app_sites_scores_index') }}" class="nav-link {{ current starts with 'app_sites_scores' ? 'active' }}">
+                <i class="bi bi-shield-check me-2"></i> Sites_Scores
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ path('app_help') }}" class="nav-link {{ current == 'app_help' ? 'active' }}">
                 <i class="bi bi-question-circle me-2"></i> Help &amp; Glossary
             </a>

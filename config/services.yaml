@@ -1,3 +1,7 @@
+parameters:
+    sites_scores.project_dir: '%kernel.project_dir%/../../../python_sec/Projet/AUTOMATISATION_SÉCURITÉ'
+    sites_scores.python: 'python3'
+
 services:
     _defaults:
         autowire: true      # inject dependencies automatically
@@ -9,3 +13,8 @@ services:
         exclude:
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    App\Service\SitesScoresRunner:
+        arguments:
+            $projectDir: '%sites_scores.project_dir%'
+            $pythonBinary: '%sites_scores.python%'
